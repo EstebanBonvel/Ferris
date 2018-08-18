@@ -11,12 +11,17 @@ const moment = require('moment')
 const Db = require('./mongo');
 const mongo = new Db();
 const ObjectID = require('mongodb').ObjectID
+const ud = require('urban-dictionary')
+var mongo_url = "mongodb+srv://admin:Pokebipe1@ferrisbot-kdphf.mongodb.net/test?retryWrites=true";
+var mongomeh = require('mongodb').MongoClient;
+var owjs = require('overwatch-js');
+
 //Bot's 
 const token = 'MzU3ODIxNTAzMTU4NDg0OTk0.Dj6adA.hnKlEtuLqj6ZNZK7Zk1b45DAn8I';
 const me = '!'
 
 //Music player
-const mp3Path = 'C:/Users/redru/Documents/Discord/mp3/'
+const mp3Path = 'C:/Users/Esteban/Documents/GitHub/Ferris/mp3'
 const opts = {maxResults: 2, key: 'AIzaSyBkDcWtth7A-ZJIy82Wg0vIgrKtCdwFWJo'};
 
 //Movie search
@@ -85,6 +90,10 @@ client.on('message', message => {
             action :'moneyMari()',
             desc : 'Take my money !'
         },
+        joke : {
+            action :'joke()',
+            desc : 'It\'s joke !'
+        },
         fukyu : {
             action :'fukyu()',
             desc : 'Ai-chan :3'
@@ -120,6 +129,22 @@ client.on('message', message => {
         steamid : {
             action : 'steamid(message.content.substring(9))',
             desc : 'Save your Steam ID so it can be used retrieve data about bla bla bla'
+        },
+        blizzid : {
+            action : 'blizzid(message.content.substring(8))',
+            desc : 'Save your Blizzard ID so it can be used retrieve data about bla bla bla'
+        },
+        ow : {
+            action : 'ow(message.content.substring(3))',
+            desc : 'Get some OverWatch data about you or a specific user'
+        },
+        urb : {
+            action : 'urb(message.content.substring(4))',
+            desc : 'Get the definition of a term from Urban Dictionnary'
+        },
+        rdurb : {
+            action : 'rdurb()',
+            desc : 'Get the definition of a random term from Urban Dictionnary'
         }
     }
     
@@ -252,9 +277,8 @@ client.on('message', message => {
               };
               message.channel.send({ embed });
         });
-    }//Recherche de film/série/anime
-    
-    
+    }
+     
     register = () => {
         if (!message.guild) return;
         message.guild.fetchMember(message.author)
@@ -276,58 +300,153 @@ client.on('message', message => {
         })
     }
     
-    steamid = (steamId) => {
+    steamid = steamId => {
         if (!message.guild) return;
         message.guild.fetchMember(message.author)
         .then(member => {
-            let obj = {
-                    steam_id : {
-                        name : 'Steam ID',
-                        value : steamId
+        let obj = {id : member.user.id}
+            mongo.select(obj, function(err, result) {
+                if (err)
+                    console.log(err);
+                console.log(result);
+                if (result[0] == null ){
+                    message.channel.send('You need to register first using the command `register`')
+                    return
+                }  else if (result[0].steam_id != null) {
+                    message.channel.send(`You've already saved your Steam ID.`)
+                    return
+                } else {
+                    let query = {
+                        steam_id : {
+                            name : 'Steam ID',
+                            value : steamId
+                        }
                     }
+                // mongo.insert(member.user.id, obj)
+                mongomeh.connect(mongo_url, { useNewUrlParser: true }, function(err, db) {
+                    if (err) throw err;
+                    var dbo = db.db("ferris");
+                    var newvalues = { $set: query };
+                    dbo.collection("profiles").updateOne(obj, newvalues, function(err, res) {
+                      if (err) throw err;
+                      console.log("1 user updated");
+                      db.close();
+                  });
+                })
+                message.channel.send('Steam ID saved. You can now use the `steamStuff` commands. ')
                 }
-            mongo.insert(member.user.id, obj)
-            message.channel.send('Steam ID saved. You can now use the `steamStuff` commands. ')
+            });
         })
     }
 
-    // profile = () => {
-    //     if (!message.guild) return;
-    //     message.guild.fetchMember(message.author)
-    //     .then(member => {
-    //     let obj = {user : member.user.id}
-    //     mongo.select(obj, function(err, result) {
-    //         if (err)
-    //             console.log(err);
-    //         console.log(result);
+    blizzid = blizzId => {
+        if (!message.guild) return;
+        message.guild.fetchMember(message.author)
+        .then(member => {
+        let obj = {id : member.user.id}
+            mongo.select(obj, function(err, result) {
+                if (err)
+                    console.log(err);
+                console.log(result);
+                if (result[0] == null){
+                    message.channel.send('You need to register first using the command `register`')
+                    return
+                } else if (result[0].blizz_id != null) {
+                    message.channel.send('You\'ve already registered your Blizzard ID')
+                    return
+                } else {
+                    let query = {
+                        blizz_id : {
+                            name : 'Blizzard ID',
+                            value : blizzId.trim()
+                        }
+                    }
+                // mongo.insert(member.user.id, obj)
+                mongomeh.connect(mongo_url, { useNewUrlParser: true }, function(err, db) {
+                    if (err) throw err;
+                    var dbo = db.db("ferris");
+                    var newvalues = { $set: query };
+                    dbo.collection("profiles").updateOne(obj, newvalues, function(err, res) {
+                      if (err) throw err;
+                      console.log("1 user updated");
+                      db.close();
+                  });
+                })
+                message.channel.send('Blizzard ID saved. You can now use Blizzard related commands. ')
+                }
+            });
+        })
+    }
 
-    //         if (result[0] == null){
-    //             message.channel.send('You need to register first. Use the `register` command to do so.')
-    //             return
-    //         } else {
-                
-    //             let embed = {}
-    //             fields = []
-        
-    //             result.forEach((element, index) => {
-    //                 let tmp = {}
-    //                 tmp.name = Object.keys(element)[1]
-    //                 tmp.value = element[tmp.name]
-    //                 fields.push(tmp)
-    //             })
+    ow = blizzId => {
+        if (!message.guild) return;
+        if (blizzId == "" || blizzId == undefined) {
+            message.guild.fetchMember(message.author)
+            .then(member => {
+            let obj = {id : member.user.id}
+            mongo.select(obj, function(err, result) {
+                if (err)
+                    console.log(err);
+                if (result[0] == null){
+                    message.channel.send('You need to register first using the command `register`')
+                    return
+                } else if (result[0].blizz_id == null) {
+                    message.channel.send('You need to register first using the command `blizzid <Your Blizzard ID>`')
+                    return
+                } else {
+                    
+                    owjs.search(result[0].blizz_id.value)
+                    // .then((data) => console.dir(data[0]))
+                    .then(data => {
+                        let embed = {
+                            'title': data[0].name,
+                            'color': 16423965,
+                            'thumbnail': {
+                              'url': data[0].portrait
+                            },
+                            'image': {
+                              'url': data[0].portrait
+                            },
+                            'fields': [
+                                {
+                                  'name' : '__Level__',
+                                  'value': String(data[0].tier)+String(data[0].level),
+                                  //   'value': data.tier+data.level
+                                },
+                            ]
+                        };
 
-                
-        
-    //             embed = {fields};
-    //             embed.image = {}
-    //             embed.image.url = client.users.get(member.user.id).avatarURL
-    //             console.log(embed)
-    //             message.channel.send({ embed })
-    //         }
-    //     })
-    // })
-    //     // message.channel.send(client.users.get('183667960160845824').avatarURL)
-    // }
+                        message.channel.send({embed})
+                        console.log(data[0].portrait)
+                    })
+                }
+            })
+        })
+    }
+}
+
+    urb = query => {
+        if (!message.guild) return;
+        ud.term(query).then((result) => {
+            const entries = result.entries
+            message.channel.send(`**${entries[0].word}**`)
+            message.channel.send(entries[0].definition.replace(/[\[\]']+/g, ''))
+            message.channel.send(entries[0].example.replace(/[\[\]']+/g, ''))
+          }).catch((error) => {
+            console.error(error.message)
+          })
+    }
+
+    rdurb = () => {
+        ud.random().then((result) => {
+            message.channel.send(`**${result.word}**`)
+            message.channel.send(result.definition.replace(/[\[\]']+/g, ''))
+            message.channel.send(result.example.replace(/[\[\]']+/g, ''))
+          }).catch((error) => {
+            console.error(error.message)
+          })
+    }
+
 
     profile = () => {
         message.channel.send('pls no use, it not yet done :c')
@@ -356,13 +475,7 @@ client.on('message', message => {
     }
 
     moneyMari = () => {
-        let embed = {
-            'image' : {
-                'url' : 'https://imgur.com/a/FBEj60u'
-            }
-        }
-        // message.channel.send('<a:money:475848031724503041>')
-        message.channel.send(embed)
+        message.channel.send(`<a:money:475848031724503041> \n https://imgur.com/a/FBEj60u`)
         .then(message => {
             message.react('a:money:475848031724503041')
             message.pin()
@@ -372,30 +485,39 @@ client.on('message', message => {
            });
     }
 
+    joke = () => {
+        message.channel.send(`<:mawi:438815825395187753> \n https://i.kym-cdn.com/photos/images/original/001/150/620/d71.jpg`)
+        .then(message => {
+            message.react(':mawi:438815825395187753')
+            message.pin()
+            // message.delete()
+          }).catch(err => {
+            console.log(err);
+           });
+    }
+
     booruSearch = query => {
         if (!message.guild) return;
-        booru.search('gelbooru', [query], {limit: 1, random: true})
+        booru.search('gelbooru', [query.replace(' ', '_')], {limit: 1, random: true})
         .then(booru.commonfy)
         .then(images => {
-        //Log the direct link to each image
-        for (let image of images) {
-            let embed = {
-                'color': 4886754,
-                'image': {
-                  'url': image.common.file_url
-                },
-              };
-              message.channel.send({ embed });
-        }
+            for (let image of images) {
+                let embed = {
+                    'color': 4886754,
+                    'image': {
+                    'url': image.common.file_url
+                    },
+                };
+                message.channel.send({ embed });
+            }
         })
         .catch(err => {
-        if (err.name === 'BooruError') {
-            //It's a custom error thrown by the package
-            console.log(err.message)
-        } else {
-            //This means I messed up. Whoops.
-            console.log(err)
-        }
+            if (err.name === 'BooruError') {
+                console.log(err.message)
+                message.channel.send(`No results for '*${query}*'`)
+            } else {
+                console.log(err)
+            }
         })
     }
 
@@ -415,20 +537,22 @@ client.on('message', message => {
                 message.member.voiceChannel.join()
                 .then(connection => { 
                     let i = Math.floor(Math.random() * (3 - 1+ 1) ) + 1;
-                    var dispatcher = connection.playFile(`${mp3Path}fukyu${i}.mp3`);
+                    var dispatcher = connection.playFile(`${mp3Path}/fukyu${i}.mp3`);
                     dispatcher
                     dispatcher.on('error', e => {
                     console.log(e);
                     });
                     dispatcher.on('end', () => {
-                        message.member.voiceChannel.leave()
+                        setTimeout(() => {
+                            message.member.voiceChannel.leave()
+                        }, 500);
                     });
                 })
-                .catch(console.log);
+                .catch(error => console.log(error));
             } else {
                 message.channel.send('@everyone Soit pas con, rejoint un salon.');            
             }
-    };
+    }
 
     help = () => {
 
@@ -455,8 +579,6 @@ client.on('message', message => {
         console.log(embed)
         message.channel.send({ embed })
     }
-
-
 
 
 
@@ -561,3 +683,41 @@ client.on('message', message => {
 });
 
 client.login(token);
+
+// profile = () => {
+    //     if (!message.guild) return;
+    //     message.guild.fetchMember(message.author)
+    //     .then(member => {
+    //     let obj = {user : member.user.id}
+    //     mongo.select(obj, function(err, result) {
+    //         if (err)
+    //             console.log(err);
+    //         console.log(result);
+
+    //         if (result[0] == null){
+    //             message.channel.send('You need to register first. Use the `register` command to do so.')
+    //             return
+    //         } else {
+                
+    //             let embed = {}
+    //             fields = []
+        
+    //             result.forEach((element, index) => {
+    //                 let tmp = {}
+    //                 tmp.name = Object.keys(element)[1]
+    //                 tmp.value = element[tmp.name]
+    //                 fields.push(tmp)
+    //             })
+
+                
+        
+    //             embed = {fields};
+    //             embed.image = {}
+    //             embed.image.url = client.users.get(member.user.id).avatarURL
+    //             console.log(embed)
+    //             message.channel.send({ embed })
+    //         }
+    //     })
+    // })
+    //     // message.channel.send(client.users.get('183667960160845824').avatarURL)
+    // }
