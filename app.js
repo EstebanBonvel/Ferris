@@ -10,6 +10,7 @@ const nani = require('nani').init('925', 'NOkmzD3T4UWRB6mAKDdY8ANyPVhBKw8bMl5f0S
 const moment = require('moment')
 const Db = require('./mongo');
 const mongo = new Db();
+const fs  = require('fs')
 const ObjectID = require('mongodb').ObjectID
 const ud = require('urban-dictionary')
 var mongo_url = "mongodb+srv://admin:Pokebipe1@ferrisbot-kdphf.mongodb.net/test?retryWrites=true";
@@ -21,13 +22,20 @@ const token = 'MzU3ODIxNTAzMTU4NDg0OTk0.Dj6adA.hnKlEtuLqj6ZNZK7Zk1b45DAn8I';
 const me = '!'
 
 //Music player
-const mp3Path = 'C:/Users/Esteban/Documents/GitHub/Ferris/mp3'
+const requestedAudioPath = 'C:/Users/Esteban/Documents/GitHub/Ferris/audio'
 const opts = {maxResults: 2, key: 'AIzaSyBkDcWtth7A-ZJIy82Wg0vIgrKtCdwFWJo'};
+const mp3Path = 'C:/Users/Esteban/Documents/GitHub/Ferris/mp3/'
+const idolPath = 'C:/Users/Esteban/Documents/GitHub/Ferris/idols/'
 
 //Movie search
 const apikey = '&apikey=7512d6f2' 
 const request = require('request');
  
+//Rocket League API
+const rls = require('rls-api')
+var rocketLeague = new rls.Client({
+    token: "PVRPFDYU3QVKGNXXXOLLQ0QJHRJBP5YF"
+});
 
 client.on('ready', () => {
   console.log('My body is ready !');
@@ -46,30 +54,30 @@ client.on('message', message => {
             msg :'desu neeee~~ \n https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREwlTmfj5Ydlmc_WXbo-vGShi34lSLrHvYiT3fKGUTVtRYQWIK',
             desc : 'Oishi desho ?'
         },
-        play : {
-            action : 'ytPlay(message.content.substring(3))',
-            desc : 'Play selected music'
-        },
+        //// play : {
+        ////     action : 'ytPlay(message.content.substring(3))',
+        ////     desc : 'Play selected music'
+        //// },
         quit : {
             msg : 'k bye',
             action : 'message.member.voiceChannel.leave();',
             desc : 'Leave the voice channel'
         },
-        stop : {
-            msg : 'Stopped playing',
-            action : 'ytStop();',
-            desc : 'Stop playing music'
-        },
-        pause : {
-            msg : 'Paused',
-            action : 'ytPause();',
-            desc : 'Put the music on hold'
-        },
-        resume : {
-            msg : 'Resumed',
-            action : 'ytResume();',
-            desc : 'Resume the music'
-        },
+        //// stop : {
+        ////     msg : 'Stopped playing',
+        ////     action : 'ytStop();',
+        ////     desc : 'Stop playing music'
+        //// },
+        //// pause : {
+        ////     msg : 'Paused',
+        ////     action : 'ytPause();',
+        ////     desc : 'Put the music on hold'
+        //// },
+        //// resume : {
+        ////     msg : 'Resumed',
+        ////     action : 'ytResume();',
+        ////     desc : 'Resume the music'
+        //// },
         search : {
             action : 'movieSearch(message.content.substring(7));',
             desc : 'Search a movie/serie/anime...'
@@ -82,10 +90,6 @@ client.on('message', message => {
             msg : 'Paku ! ( ๑ÒωÓ๑) \n https://img.fireden.net/a/image/1503/79/1503798775501.gif',
             desc : 'Nom nom'
         },
-        japanize : {
-            action : 'japanizer(message.content.substring(9))',
-            desc : 'debug'
-        },
         money : {
             action :'moneyMari()',
             desc : 'Take my money !'
@@ -96,6 +100,10 @@ client.on('message', message => {
         },
         fukyu : {
             action :'fukyu()',
+            desc : 'Ai-chan :3'
+        },
+        idol : {
+            action :'idol(message.content.substring(6))',
             desc : 'Ai-chan :3'
         },
         help : {
@@ -138,6 +146,10 @@ client.on('message', message => {
             action : 'ow(message.content.substring(3))',
             desc : 'Get some OverWatch data about you or a specific user'
         },
+        rl : {
+            action : 'rl(message.content.substring(3))',
+            desc : 'Get some Rocket League data about you or a specific user'
+        },
         urb : {
             action : 'urb(message.content.substring(4))',
             desc : 'Get the definition of a term from Urban Dictionnary'
@@ -145,6 +157,10 @@ client.on('message', message => {
         rdurb : {
             action : 'rdurb()',
             desc : 'Get the definition of a random term from Urban Dictionnary'
+        },
+        roulette : {
+            action : 'roulette(message.content.substring(9))',
+            desc : 'Pick a random element from user\'s choice. A comma must be used to separate the elements.'
         }
     }
     
@@ -157,87 +173,11 @@ client.on('message', message => {
         hmm : {
             msg : 'https://media1.tenor.com/images/d8ff9629ade20e3fe0d95b919bdc96f4/tenor.gif?itemid=11140147'
         },
-        '@Ima Test#8227' : {
-            msg : 'Nani nani ?'
-        } 
+        ayy : {
+            action : 'ayy()'
+        }
     }
 
-    const consonnes = ['z','r','t','p','q','s','d','f','g','h','j','k','l','m','w','x','c','v','b','n']
-
-    
-    ytPlay = query => {
-        if (!message.guild) return;
-            if (message.member.voiceChannel) {
-                message.member.voiceChannel.join()
-                .then(connection => { 
-                    search(query, opts, function(err, results) {
-                        if(err) return console.log(err);
-                        console.log(results[0], results[1]);
-                        
-                        let videoID = results[1].id 
-                        let videoTitle = results[1].title
-                        message.channel.send(videoTitle + " found")
-                        dl.getMP3({videoId: videoID, name: `${videoTitle}.mp3`}, function(err,res){
-                            if(err)
-                                throw err;
-                            else{
-                                var dispatcher = connection.playFile(mp3Path + videoTitle +'.mp3');
-                                dispatcher
-                                dispatcher.on('error', e => {
-                                console.log(e);
-                                });
-                            }
-                        });
-                    })
-                })
-                .catch(console.log);
-            } else {
-                message.channel.send('@everyone Soit pas con, rejoint un salon.');            
-            }
-    };
-
-    ytStop = () => {
-        if (!message.guild) return;
-            if (message.member.voiceChannel) {
-                message.member.voiceChannel.join()
-                    .then(connection => { // Connection is an instance of VoiceConnection
-                    var dispatcher = connection.playFile();
-                    dispatcher.end()
-                    message.member.voiceChannel.leave();
-                })
-                .catch(console.log);
-            } else {
-                message.channel.send('T\'es qui dans l\'game pour arrêter la musique sans être dans un salon ?');            
-            }
-    };  
-
-    ytPause = () => {
-        if (!message.guild) return;
-            if (message.member.voiceChannel) {
-                message.member.voiceChannel.join()
-                    .then(connection => { // Connection is an instance of VoiceConnection
-                    var dispatcher = connection.playFile();
-                    dispatcher.pause()
-                })
-                .catch(console.log);
-            } else {
-                message.channel.send('Nice try, boi');            
-            }
-    };
-
-    ytResume = () => {
-        if (!message.guild) return;
-            if (message.member.voiceChannel) {
-                message.member.voiceChannel.join()
-                    .then(connection => { // Connection is an instance of VoiceConnection
-                    var dispatcher = connection.playFile();
-                    dispatcher.destroyed()
-                })
-                .catch(console.log);
-            } else {
-                message.channel.send('Nice try, boi');            
-            }
-    };
 
     //Recherche de film/série/anime
     movieSearch = query => {
@@ -475,9 +415,8 @@ client.on('message', message => {
     }
 
     moneyMari = () => {
-        message.channel.send(`<a:money:475848031724503041> \n https://imgur.com/a/FBEj60u`)
+        message.channel.send(`https://imgur.com/a/FBEj60u`)
         .then(message => {
-            message.react('a:money:475848031724503041')
             message.pin()
             // message.delete()
           }).catch(err => {
@@ -486,9 +425,8 @@ client.on('message', message => {
     }
 
     joke = () => {
-        message.channel.send(`<:mawi:438815825395187753> \n https://i.kym-cdn.com/photos/images/original/001/150/620/d71.jpg`)
+        message.channel.send(`https://i.kym-cdn.com/photos/images/original/001/150/620/d71.jpg`)
         .then(message => {
-            message.react(':mawi:438815825395187753')
             message.pin()
             // message.delete()
           }).catch(err => {
@@ -531,13 +469,44 @@ client.on('message', message => {
         });
     }
 
+    idol = idolName => {
+        if (!message.guild) return;
+        if (message.member.voiceChannel) {
+            fs.readdir(idolPath, function(err, items) {
+                if (err)
+                    console.log(err)
+                items.forEach(idol => {
+                    if (idol == `${idolName}.mp3`) {
+                        message.member.voiceChannel.join()      
+                        .then(connection => { 
+                            var dispatcher = connection.playFile(`${idolPath}${idol}`);   
+                            setTimeout(() => {
+                                dispatcher
+                                dispatcher.on('error', e => {
+                                console.log(e);
+                                });
+                                dispatcher.on('end', () => {
+                                    setTimeout(() => {
+                                        message.member.voiceChannel.leave()
+                                    }, 500);
+                                });
+                            }, 500);
+                        }).catch(error => console.log(error));
+                    }
+                });
+            });
+        } else {
+            message.channel.reply('You have to be in a voice channel to do that.'); 
+        }
+    }
+
     fukyu = () => {
         if (!message.guild) return;
             if (message.member.voiceChannel) {
                 message.member.voiceChannel.join()
                 .then(connection => { 
                     let i = Math.floor(Math.random() * (3 - 1+ 1) ) + 1;
-                    var dispatcher = connection.playFile(`${mp3Path}/fukyu${i}.mp3`);
+                    var dispatcher = connection.playFile(`${requestedAudioPath}/fukyu${i}.mp3`);
                     dispatcher
                     dispatcher.on('error', e => {
                     console.log(e);
@@ -550,8 +519,23 @@ client.on('message', message => {
                 })
                 .catch(error => console.log(error));
             } else {
-                message.channel.send('@everyone Soit pas con, rejoint un salon.');            
+                message.channel.reply('You have to be in a voice channel to do that.');            
             }
+    }
+
+    roulette = query => {
+        if (!message.guild) return;
+
+        if (!query.includes(',')) {
+            message.channel.send(`You must separate your entries with a *comma*`);
+        } else {
+            message.channel.send(`And the result is...`);
+            let entries = query.split(',')
+            let i = Math.floor(Math.random() * entries.length);
+                let winner = entries[i].trim()
+                message.channel.send(`\`${winner}\``);
+                return
+        }
     }
 
     help = () => {
@@ -570,17 +554,112 @@ client.on('message', message => {
 
         commands.forEach((element, index) => {
             let tmp = {}
-            tmp.name = `!${element.name}`
+            tmp.name = `${me}${element.name}`
             tmp.value = element.desc
             fields.push(tmp)
         })
 
         embed = {fields};
-        console.log(embed)
         message.channel.send({ embed })
     }
 
+    rl = steamId => {
+        if (!message.guild) return;
+        if (steamId == "" || steamId == undefined) {
+            message.guild.fetchMember(message.author)
+            .then(member => {
+            let obj = {id : member.user.id}
+            mongo.select(obj, function(err, result) {
+                if (err)
+                    console.log(err);
+                if (result[0] == null){
+                    message.channel.send('You need to register first using the command `register`')
+                    return
+                } else if (result[0].steam_id == null) {
+                    message.channel.send('You need to register first using the command `steamid <Your Steam ID>`')
+                    return
+                } else {
+                    rocketLeague.getPlayer(result[0].steam_id.value, rls.platforms.STEAM, function(status, data){
+                        if(status === 200){
+                            let embed = {
+                                'title': `${data.displayName}'s Rocket League stats`,
+                                'color': 1665988,
+                                'thumbnail': {
+                                  'url': 'https://vignette.wikia.nocookie.net/rocketleague/images/f/f6/Rocketleague-logo.png/revision/latest?cb=20161207070401&format=original'
+                                },
+                                'image': {
+                                  'url': data.avatar
+                                },
+                                'fields': [
+                                    {
+                                      'name' : '__Wins__',
+                                      'value': data.stats.wins,
+                                      //   'value': data.tier+data.level
+                                        "inline": true,
+                                    },
+                                    {
+                                      'name' : '__Goals__',
+                                      'value': data.stats.goals,
+                                      //   'value': data.tier+data.level
+                                        "inline": true
+                                    },
+                                    {
+                                      'name' : '__MVP__',
+                                      'value': data.stats.mvps,
+                                      //   'value': data.tier+data.level
+                                        "inline": true
+                                    },
+                                    {
+                                      'name' : '__Saves__',
+                                      'value': data.stats.saves,
+                                      //   'value': data.tier+data.level
+                                        "inline": true
+                                    },
+                                    {
+                                      'name' : '__Shots__',
+                                      'value': data.stats.shots,
+                                      //   'value': data.tier+data.level
+                                        "inline": true
+                                    },
+                                    {
+                                      'name' : '__Assists__',
+                                      'value': data.stats.assists,
+                                      //   'value': data.tier+data.level
+                                        "inline": true
+                                    },
+                                ]
+                            };
+                                message.channel.send({embed})
+                            } else {
+                                console.log(`Can't get any data for specified user.`);
+                            }
+                        });
+                    }
+                },
+            )}
+        )}
+    }
 
+
+    ayy = () => {
+        message.channel.send(`🇱 🇲 🇦 🇴 \n https://imgur.com/a/wm4aYTY`)
+        .then(message => {
+            message.react('🇱')
+            setTimeout(() => {
+                message.react('🇲')
+                setTimeout(() => {
+                    message.react('🇦')        
+                    setTimeout(() => {
+                        message.react('🇴')
+                    }, 1000);
+                }, 1000);
+            }, 1000);
+        })
+            // message.delete()
+          .catch(err => {
+            console.log(err);
+           });
+    }
 
 
 
@@ -589,67 +668,16 @@ client.on('message', message => {
 
     //Embed template
     test = () => {
-        const embed = {
-            "title": "title ~~(did you know you can have markdown here too?)~~",
-            "description": "this supports [named links](https://discordapp.com) on top of the previously shown subset of markdown. ```\nyes, even code blocks```",
-            "url": "https://discordapp.com",
-            "color": 16213584,
-            "timestamp": "2018-08-06T05:25:18.835Z",
-            "footer": {
-              "icon_url": "https://cdn.discordapp.com/embed/avatars/0.png",
-              "text": "footer text"
-            },
-            "thumbnail": {
-              "url": "https://cdn.discordapp.com/embed/avatars/0.png"
-            },
-            "image": {
-              "url": "https://cdn.discordapp.com/embed/avatars/0.png"
-            },
-            "author": {
-              "name": "author name",
-              "url": "https://discordapp.com",
-              "icon_url": "https://cdn.discordapp.com/embed/avatars/0.png"
-            },
-            "fields": [
-              {
-                "name": "🤔",
-                "value": "some of these properties have certain limits..."
-              },
-              {
-                "name": "😱",
-                "value": "try exceeding some of them!"
-              },
-              {
-                "name": "🙄",
-                "value": "an informative error should show up, and this view will remain as-is until all issues are fixed"
-              },
-              {
-                "name": "<:thonkang:219069250692841473>",
-                "value": "these last two",
-                "inline": true
-              },
-              {
-                "name": "<:thonkang:219069250692841473>",
-                "value": "are inline fields",
-                "inline": true
-              }
-            ]
-          };
-          message.channel.send("this `supports` __a__ **subset** *of* ~~markdown~~ 😃 ```js\nfunction foo(bar) {\n  console.log(bar);\n}\n\nfoo(1);```", { embed });
-    }
+        
+            // Get messages
+            message.channel.fetchMessages()
+            .then(messages => console.log(messages.filter(m => m.author.id === message.author.id)))
+            .catch(console.error);
 
-    japanizer = str => {
-        consonnes.forEach(element => {
-            str.replace(element, `${element}u`)
-            if (element == 'r')
-                str.replace(element, 'lu')
-                console.log(str);
-                
-        })
-        setTimeout(() => {
-            message.channel.send(str)
-        }, 100);
-
+            message.channel.fetchMessage('504520923752431642')
+            .then(message => console.log(message.content))
+            .catch(console.error)
+        
     }
 
     //Message parsé
@@ -658,14 +686,19 @@ client.on('message', message => {
     //Actions normales
     for(msg in answers) {
         if (str.includes(`${me}${msg}`)) {
-            
-            if (answers[msg].msg != null && answers[msg].msg != undefined) 
-                message.channel.send(answers[msg].msg);
-            
-            if (answers[msg].action != null && answers[msg].action != undefined) 
-                eval(answers[msg].action)
-            return
-        }
+            if (message.content.split('')[0] == me) {
+                let data = {command : message.content}
+                mongo.insert(data, 'commands')
+                
+                if (answers[msg].msg != null && answers[msg].msg != undefined) 
+                    message.channel.send(answers[msg].msg);
+                
+                if (answers[msg].action != null && answers[msg].action != undefined) 
+                    eval(answers[msg].action)
+                    return
+            } else
+                return
+            }
     }
 
     //Actions spéciales

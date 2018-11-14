@@ -51,7 +51,7 @@ var mongo_url = "mongodb+srv://admin:Pokebipe1@ferrisbot-kdphf.mongodb.net/test?
         var dbo = db.db("ferris");
         dbo.collection("profiles").insertOne(query, function(err, res) {
             if (err) throw err;
-            console.log("1 user inserted");
+            // console.log("1 user inserted");
             db.close();
         });
     });
@@ -66,7 +66,7 @@ var mongo_url = "mongodb+srv://admin:Pokebipe1@ferrisbot-kdphf.mongodb.net/test?
       var newvalues = { $set: query };
       dbo.collection("profiles").updateOne(obj, newvalues, function(err, res) {
         if (err) throw err;
-        console.log("1 user updated");
+        // console.log("1 user updated");
         db.close();
     });
   })
