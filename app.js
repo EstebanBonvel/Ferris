@@ -1,17 +1,12 @@
 //Dependencies
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const search = require('youtube-search');
 const accents = require('remove-accents');
-const Downloader = require("./downloader");
-const dl = new Downloader();
 const booru = require('booru')
 const nani = require('nani').init('925', 'NOkmzD3T4UWRB6mAKDdY8ANyPVhBKw8bMl5f0S7n');
-const moment = require('moment')
 const Db = require('./mongo');
 const mongo = new Db();
 const fs  = require('fs')
-const ObjectID = require('mongodb').ObjectID
 const ud = require('urban-dictionary')
 var mongo_url = "mongodb+srv://admin:Pokebipe1@ferrisbot-kdphf.mongodb.net/test?retryWrites=true";
 var mongomeh = require('mongodb').MongoClient;
@@ -22,10 +17,12 @@ const token = 'MzU3ODIxNTAzMTU4NDg0OTk0.Dj6adA.hnKlEtuLqj6ZNZK7Zk1b45DAn8I';
 const me = '!'
 
 //Music player
-const requestedAudioPath = 'C:/Users/Esteban/Documents/GitHub/Ferris/audio'
+// const requestedAudioPath = 'C:/Users/Esteban/Documents/GitHub/Ferris/audio'
+// const idolPath = 'C:/Users/Esteban/Documents/GitHub/Ferris/idols/'
+const requestedAudioPath = '/home/bot/Ferris/audio'
+const idolPath = '/home/bot/Ferris/idols/'
 const opts = {maxResults: 2, key: 'AIzaSyBkDcWtth7A-ZJIy82Wg0vIgrKtCdwFWJo'};
-const mp3Path = 'C:/Users/Esteban/Documents/GitHub/Ferris/mp3/'
-const idolPath = 'C:/Users/Esteban/Documents/GitHub/Ferris/idols/'
+// const mp3Path = 'C:/Users/Esteban/Documents/GitHub/Ferris/mp3/'
 
 //Movie search
 const apikey = '&apikey=7512d6f2' 
