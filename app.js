@@ -172,6 +172,9 @@ client.on('message', message => {
         },
         ayy : {
             action : 'ayy()'
+        },
+        yoshiko : {
+            msg : 'Yohane*'
         }
     }
 
