@@ -160,11 +160,11 @@ client.on('message', message => {
             desc : 'Pick a random element from user\'s choice. A comma must be used to separate the elements.'
         },
         retard : {
-            action : 'remindme(message.content.substring(7))',
+            action : 'retard(message.content.substring(7))',
             desc : 'Retardify a word or sentence.'
         },
         remindme : {
-            action : 'roulette(message.content.substring(9))',
+            action : 'remindme(message.content.substring(9))',
             desc : 'Set a reminder. Use either seconds (s), minutes (m) or hours (h). Example : remindme post meme; 10m'
         }
     }
