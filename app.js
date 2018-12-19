@@ -158,6 +158,14 @@ client.on('message', message => {
         roulette : {
             action : 'roulette(message.content.substring(9))',
             desc : 'Pick a random element from user\'s choice. A comma must be used to separate the elements.'
+        },
+        retard : {
+            action : 'remindme(message.content.substring(7))',
+            desc : 'Retardify a word or sentence.'
+        },
+        remindme : {
+            action : 'roulette(message.content.substring(9))',
+            desc : 'Set a reminder. Use either seconds (s), minutes (m) or hours (h). Example : remindme post meme; 10m'
         }
     }
     
@@ -387,7 +395,6 @@ client.on('message', message => {
           })
     }
 
-
     profile = () => {
         message.channel.send('pls no use, it not yet done :c')
     }
@@ -538,6 +545,46 @@ client.on('message', message => {
         }
     }
 
+    retard = query => {
+        if (!message.guild) return;
+
+        step = query.replace(/[^a-zA-Z ]/g, "")
+        splitted = step.split('')
+        
+        for (let i = 0; i < splitted.length; i += 2) {
+            splitted[i] = splitted[i].toUpperCase();
+        }
+        
+        for (let i = 1; i < splitted.length; i += 2) {
+            splitted[i] = splitted[i].toLowerCase();
+        }
+            message.channel.send(splitted.join(''));
+    }
+
+    remindme = query => {
+        if (!message.guild) return;
+
+        let thing = query.split(';')[0].trim()
+        let time = query.split(';')[1].trim()
+
+        let duration = Number(time.substring(0, time.length-1))
+
+        let unit = time.split('')[time.length-1]
+        
+        if (unit === 'h')
+            duration *= 3600 * 1000
+        else if (unit === 'm')
+            duration *= 60 * 1000
+        else if (unit === 's')
+            duration *= 1000
+        else
+            return 'Please use a correct unit'
+
+        setTimeout(() => {
+            message.channel.send(`Hey ${message.author}, remember that "${thing}" ?`)
+        }, duration);
+    }
+
     help = () => {
 
         commands = []
@@ -639,7 +686,6 @@ client.on('message', message => {
             )}
         )}
     }
-
 
     ayy = () => {
         message.channel.send(`🇱 🇲 🇦 🇴 \n https://imgur.com/a/wm4aYTY`)
