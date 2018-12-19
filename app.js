@@ -581,7 +581,7 @@ client.on('message', message => {
             return 'Please use a correct unit'
 
         setTimeout(() => {
-            message.channel.send(`Hey ${message.author}, remember that "${thing}" ?`)
+            message.channel.send(`Hey ${message.author}, remember to "${thing}" ?`)
         }, duration);
     }
 
