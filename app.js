@@ -548,17 +548,29 @@ client.on('message', message => {
     retard = query => {
         if (!message.guild) return;
 
-        step = query.replace(/[^a-zA-Z ]/g, "")
-        splitted = step.split('')
-        
-        for (let i = 0; i < splitted.length; i += 2) {
-            splitted[i] = splitted[i].toUpperCase();
+        retardify = content => {
+            step = content.replace(/[^a-zA-Z ]/g, "")
+            splitted = step.split('')
+            
+            for (let i = 0; i < splitted.length; i += 2) {
+                splitted[i] = splitted[i].toUpperCase();
+            }
+            
+            for (let i = 1; i < splitted.length; i += 2) {
+                splitted[i] = splitted[i].toLowerCase();
+            }
+                message.channel.send(splitted.join(''));
         }
-        
-        for (let i = 1; i < splitted.length; i += 2) {
-            splitted[i] = splitted[i].toLowerCase();
+
+        if (query === null || query === "") {
+            message.channel.fetchMessages( {limit: 2})
+                .then(messages => {
+                    retardify(messages.last().content)
+                }
+            )
+        } else {
+            retardify(query)
         }
-            message.channel.send(splitted.join(''));
     }
 
     remindme = query => {
