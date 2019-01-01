@@ -186,9 +186,9 @@ client.on('message', message => {
         }
     }
 
+  
 
-    //Recherche de film/série/anime
-    movieSearch = query => {
+    search = query => {
         if (!message.guild) return;
         name = query.replace(' ', '+')
         request(`http://www.omdbapi.com/?t=${name}${apikey}`, { json: true }, (err, res, body) => {
@@ -225,6 +225,16 @@ client.on('message', message => {
               };
               message.channel.send({ embed });
         });
+    }
+
+    if (message.content.match(/\{([^)]+)\}/) !== null) {
+        let query = message.content.match(/\{([^)]+)\}/)[1]
+        search(query)
+    }
+
+    //Recherche de film/série/anime
+    movieSearch = query => {
+        search(query)
     }
      
     register = () => {
