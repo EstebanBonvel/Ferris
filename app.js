@@ -36,6 +36,7 @@ var rocketLeague = new rls.Client({
 
 client.on('ready', () => {
     console.log('My body is ready !');
+    client.user.setActivity('cute loli noises', { type: 'LISTENING'})
   });
   
   
