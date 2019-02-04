@@ -174,6 +174,10 @@ client.on('ready', () => {
           result : {
               action : 'result(message.content.substring(8))',
               desc : 'Pick your result from the Steam search function.'
+          },
+          spam : {
+              action : 'spam(message.content.substring(5))',
+              spam : 'Spam someone.'
           }
       }
       
@@ -834,6 +838,12 @@ client.on('ready', () => {
   
           // }
       }
+
+    spam = victim => {
+        for (let i = 0; i < 8; i++) {
+            message.channel.send(victim)
+        }
+    }
   
   
       //BS
