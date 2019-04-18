@@ -201,44 +201,60 @@ client.on('ready', () => {
   
   
       //Recherche de film/série/anime
-      movieSearch = query => {
-          if (!message.guild) return;
-          name = query.replace(' ', '+')
-          request(`http://www.omdbapi.com/?t=${name}${apikey}`, { json: true }, (err, res, body) => {
-              if (err) { return console.log(err); }
-              let embed = {
-                  'title': body.Title,
-                  'color': 16213584,
-                  'thumbnail': {
-                    'url': body.Poster
-                  },
-                  'image': {
-                    'url': body.Poster
-                  },
-                  'fields': [
-                      {
-                        'name' : '__Genres__',
-                        'value': body.Genre
-                      },
-                      {
-                        'name' : '__Episodes__',
-                        'value': body.Runtime,
-                        'inline' : true
-                      },
-                      {
-                        'name' : '__Date de publication__',
-                        'value': body.Released,
-                        'inline' : true
-                      },
-                      {
-                        'name' : '__Synopsis__',
-                        'value': body.Plot
-                      },
-                  ]
-                };
-                message.channel.send({ embed });
-          });
-      }
+      search = query => {
+        if (!message.guild) return;
+        name = query.replace(/ /g, '+')
+        let url = `https://www.nautiljon.com/animes/${name}.html`
+        request(url, { json: true }, (err, res, body) => {
+            if (err) { return console.log(err); }
+            if (res.statusCode === 200) {
+                message.channel.send(url)
+            } else {
+                message.channel.send(`Nothing found for *${query}*`)
+            }
+            // let embed = {
+            //     'title': body.Title,
+            //     'color': 16213584,
+            //     'thumbnail': {
+            //       'url': body.Poster
+            //     },
+            //     'image': {
+            //       'url': body.Poster
+            //     },
+            //     'fields': [
+            //         {
+            //           'name' : '__Genres__',
+            //           'value': body.Genre
+            //         },
+            //         {
+            //           'name' : '__Episodes__',
+            //           'value': body.Runtime,
+            //           'inline' : true
+            //         },
+            //         {
+            //           'name' : '__Date de publication__',
+            //           'value': body.Released,
+            //           'inline' : true
+            //         },
+            //         {
+            //           'name' : '__Synopsis__',
+            //           'value': body.Plot
+            //         },
+            //     ]
+            //   };
+            //   message.channel.send({ embed });
+        });
+    }
+
+    if (message.content.match(/\{([^)]+)\}/) !== null) {
+        let query = message.content.match(/\{([^)]+)\}/)[1]
+        search(query)
+    }
+
+    //Recherche de film/série/anime
+    movieSearch = query => {
+        search(query)
+    }
        
       register = () => {
           if (!message.guild) return;
@@ -383,8 +399,8 @@ client.on('ready', () => {
                   }
               })
           })
+        }
       }
-  }
   
       urb = query => {
           if (!message.guild) return;
@@ -455,29 +471,41 @@ client.on('ready', () => {
       }
   
       booruSearch = query => {
-          if (!message.guild) return;
-          booru.search('gelbooru', [query.replace(' ', '_')], {limit: 1, random: true})
-          .then(booru.commonfy)
-          .then(images => {
-              for (let image of images) {
-                  let embed = {
-                      'color': 4886754,
-                      'image': {
-                      'url': image.common.file_url
-                      },
-                  };
-                  message.channel.send({ embed });
-              }
-          })
-          .catch(err => {
-              if (err.name === 'BooruError') {
-                  console.log(err.message)
-                  message.channel.send(`No results for '*${query}*'`)
-              } else {
-                  console.log(err)
-              }
-          })
-      }
+        if (!message.guild) return;
+        var lewd = query.replace(/ /g, '_')
+        rllewd = lewd.replace(/'+'/g, ' ')
+        booru.search('gelbooru', [rllewd], {limit: 1, random: true})
+        .then(booru.commonfy)
+        .then(images => {
+            for (let image of images) {
+                var tempTags = []
+                image.common.tags.forEach((tag, index) => {
+                    let stuff = "[`"+tag+"`]"+`(https://gelbooru.com/index.php?page=post&s=list&tags=${tag}) `
+                    if (tempTags[0] === undefined) {
+                        tempTags.push(stuff)
+                    } else {
+                        tempTags[0] += stuff
+                    }
+                })
+
+                let embed = {
+                    'color': 4886754,
+                    'image': {
+                        'url': image.common.file_url
+                    }
+                };
+                message.channel.send({ embed });
+            }
+        })
+        .catch(err => {
+            if (err.name === 'BooruError') {
+                console.log(err.message)
+                message.channel.send(`No results for '*${query}*'`)
+            } else {
+                console.log(err)
+            }
+        })
+    }
   
       anime = query => {
           nani.get(`${query}`)
