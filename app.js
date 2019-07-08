@@ -505,7 +505,7 @@ client.on('ready', () => {
                 console.log(err)
             }
         })
-    }
+        }
   
       anime = query => {
           nani.get(`${query}`)
@@ -761,7 +761,6 @@ client.on('ready', () => {
              });
       }
   
-  
       steam = query => {
           var json = JSON.parse(fs.readFileSync('steam.json'))
           var apps = json.applist.apps
@@ -825,7 +824,6 @@ client.on('ready', () => {
       }
   
       result = result => {
-  
           fs.readFile('games.txt', 'utf-8', function (err,data) {
               if (err) throw err
               let appid = data.split(',')[result]
@@ -868,11 +866,11 @@ client.on('ready', () => {
           // }
       }
 
-    spam = victim => {
+      spam = victim => {
         for (let i = 0; i < 8; i++) {
             message.channel.send(victim)
         }
-    }
+      }
   
   
       //BS
@@ -894,7 +892,7 @@ client.on('ready', () => {
           if (str.includes(`${me}${msg}`)) {
               if (message.content.split('')[0] == me) {
                   let data = {command : message.content}
-                  mongo.insert(data, 'commands')
+                //   mongo.insert(data, 'commands')
                   
                   if (answers[msg].msg != null && answers[msg].msg != undefined) 
                       message.channel.send(answers[msg].msg);
