@@ -16,6 +16,7 @@
     "moment": "^2.23.0",
     "mongodb": "^3.1.1",
     "nani": "^1.2.0",
+    "node-myanimelist": "^1.1.4",
     "opusscript": "0.0.6",
     "overwatch-js": "^1.8.0",
     "remove-accents": "^0.4.2",

@@ -11,9 +11,10 @@ const ud = require('urban-dictionary')
 var mongo_url = "mongodb+srv://admin:Pokebipe1@ferrisbot-kdphf.mongodb.net/test?retryWrites=true";
 var mongomeh = require('mongodb').MongoClient;
 var owjs = require('overwatch-js');
+const { Mal } = require("node-myanimelist");
 
 //Bot's 
-const token = 'MzU3ODIxNTAzMTU4NDg0OTk0.Dj6adA.hnKlEtuLqj6ZNZK7Zk1b45DAn8I';
+// const token = 'MzU3ODIxNTAzMTU4NDg0OTk0.Dj6adA.hnKlEtuLqj6ZNZK7Zk1b45DAn8I';
 const me = '!'
 
 //Music player
@@ -179,6 +180,10 @@ client.on('ready', () => {
           spam : {
               action : 'spam(message.content.substring(5))',
               spam : 'Spam someone.'
+          },
+          mal : {
+              action : 'mal(message.content.substring(4))',
+              desc : 'Search an anime on MyAnimeList'
           }
       }
       
@@ -505,7 +510,7 @@ client.on('ready', () => {
                 console.log(err)
             }
         })
-        }
+      }
   
       anime = query => {
           nani.get(`${query}`)
@@ -871,6 +876,49 @@ client.on('ready', () => {
             message.channel.send(victim)
         }
       }
+
+      mal = anime => {
+        Mal.search("anime", {
+            q: anime,
+            page: 1,
+            type: 'TV',
+            limit: 1
+        }).then(j => {
+            let res = j.results[0]
+            console.log(res)
+            let embed = {
+                'title': res.title,
+                'color': 4672943,
+                'thumbnail': {
+                'url': 'https://scontent-cdt1-1.xx.fbcdn.net/v/t1.0-9/11102649_944013775632587_553205677214199318_n.png?_nc_cat=1&_nc_oc=AQkIWg545FQM4ooytY2S0lidPbdRMG99Y9YFFtO4LxPn-qme4ySH9--eEhZZcSGhTHYduJ83XrEC5B6tTFpwX7TW&_nc_ht=scontent-cdt1-1.xx&oh=b54634241cc3646c1472aea6964d29bc&oe=5DB2E0C5'
+                },
+                'image': {
+                'url': res.image_url
+                },
+                'fields': [
+                    {
+                        'name': '__Score__',
+                        'value': String(res.score),
+                        'inline': true
+                    },
+                    {
+                        'name': '__Episodes__',
+                        'value': String(res.episodes),
+                        'inline': true
+                    },
+                    {
+                        'name': '__Synopsis__',
+                        'value': res.synopsis,
+                    },
+                    {
+                        'name': '__Link__',
+                        'value': res.url
+                    }
+                ]
+            };
+            message.channel.send({ embed });
+        });
+      }
   
   
       //BS
@@ -919,7 +967,11 @@ client.on('ready', () => {
       }
   });
   
-  client.login(token);
+  fs.readFile('./token.txt', 'utf-8', (err, token) => {
+    if (err) throw err
+    // console.log(token)
+    client.login(token);
+})
   
   // profile = () => {
       //     if (!message.guild) return;
