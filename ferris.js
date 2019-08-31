@@ -189,13 +189,6 @@ client.on('ready', () => {
       
       //Définition des fonctions spéciales
       const specials = {
-          mmh : {
-              msg : 'https://i.kym-cdn.com/photos/images/original/001/286/730/d76.gif',
-          },
-  
-          hmm : {
-              msg : 'https://media1.tenor.com/images/d8ff9629ade20e3fe0d95b919bdc96f4/tenor.gif?itemid=11140147'
-          },
           ayy : {
               action : 'ayy()'
           },
