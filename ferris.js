@@ -8,11 +8,14 @@ const Db = require('./mongo');
 const mongo = new Db();
 const fs  = require('fs')
 const ud = require('urban-dictionary')
+const moment = require('moment')
 var mongo_url = "mongodb+srv://admin:Pokebipe1@ferrisbot-kdphf.mongodb.net/test?retryWrites=true";
 var mongomeh = require('mongodb').MongoClient;
 var owjs = require('overwatch-js');
 const { Mal } = require("node-myanimelist");
-
+const {Howl, Howler} = require('howler')
+const play = require('audio-play');
+const load = require('audio-loader');
 //Bot's 
 // const token = 'MzU3ODIxNTAzMTU4NDg0OTk0.Dj6adA.hnKlEtuLqj6ZNZK7Zk1b45DAn8I';
 const me = '!'
@@ -194,7 +197,8 @@ client.on('ready', () => {
           },
           yoshiko : {
               msg : 'Yohane*'
-          }
+          },
+          'https://youtu.be/' : 'ytTimestamp()'
       }
   
   
@@ -242,17 +246,17 @@ client.on('ready', () => {
             //   };
             //   message.channel.send({ embed });
         });
-    }
+      }
 
-    if (message.content.match(/\{([^)]+)\}/) !== null) {
-        let query = message.content.match(/\{([^)]+)\}/)[1]
-        search(query)
-    }
+    //   if (message.content.match(/\{([^)]+)\}/) !== null) {
+    //       let query = message.content.match(/\{([^)]+)\}/)[1]
+    //       search(query)
+    //   }
 
     //Recherche de film/série/anime
-    movieSearch = query => {
+      movieSearch = query => {
         search(query)
-    }
+      }
        
       register = () => {
           if (!message.guild) return;
@@ -758,6 +762,16 @@ client.on('ready', () => {
               console.log(err);
              });
       }
+
+      ytTimestamp = (link) => {
+          console.log(`hey`)
+          let time = Number(link.slice(link.indexOf('=')+1))
+          message.channel.send(`(Début de la vidéo à ${moment.utc(time*1000).format('mm:ss')})`)
+      }
+
+      if (message.content.includes('?t=')) {
+          ytTimestamp(message.content)
+      }
   
       steam = query => {
           var json = JSON.parse(fs.readFileSync('steam.json'))
@@ -917,14 +931,47 @@ client.on('ready', () => {
       //BS
   
       //Embed template
-      test = () => {
-          message.channel.fetchMessages( {limit: 2})
-              .then(messages => {
-                  console.log(messages.last())
-              }
-          )
-      }
+    //   test = () => {
+    //       message.channel.fetchMessages( {limit: 2})
+    //           .then(messages => {
+    //               console.log(messages.last())
+    //           }
+    //       )
+    //   }
   
+
+
+
+      test = () => {
+        if (!message.guild) return;
+            if (message.member.voiceChannel) {
+                message.member.voiceChannel.join()
+                // .then(connection => { 
+                //     let i = Math.floor(Math.random() * (3 - 1+ 1) ) + 1;
+                //     var dispatcher = connection.playFile(`${requestedAudioPath}/fukyu${i}.mp3`);
+                //     dispatcher
+                //     dispatcher.on('error', e => {
+                //     console.log(e);
+                //     });
+                //     dispatcher.on('end', () => {
+                //         setTimeout(() => {
+                //             message.member.voiceChannel.leave()
+                //         }, 500);
+                //     });
+                // })
+                // .catch(error => console.log(error));
+                console.log(`uwu`)
+                load('C:/Users/Esteban/Documents/GitHub/Ferris/mp3/nico.mp3').then(play);
+
+               
+            } else {
+                message.channel.reply('You have to be in a voice channel to do that.');            
+            }
+    }
+
+
+
+
       //Message parsé
       let str = accents.remove(message.content.toLowerCase())
   
