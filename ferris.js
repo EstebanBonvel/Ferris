@@ -14,17 +14,20 @@ var mongomeh = require('mongodb').MongoClient;
 var owjs = require('overwatch-js');
 const { Mal } = require("node-myanimelist");
 const {Howl, Howler} = require('howler')
-const play = require('audio-play');
-const load = require('audio-loader');
+// const play = require('audio-play');
+// const load = require('audio-loader');
+
+// const player = require("node-player")
+
 //Bot's 
 // const token = 'MzU3ODIxNTAzMTU4NDg0OTk0.Dj6adA.hnKlEtuLqj6ZNZK7Zk1b45DAn8I';
 const me = '!'
 
 //Music player
-// const requestedAudioPath = 'C:/Users/Esteban/Documents/GitHub/Ferris/audio'
-// const idolPath = 'C:/Users/Esteban/Documents/GitHub/Ferris/idols/'
-const requestedAudioPath = '/home/bot/Ferris/audio'
-const idolPath = '/home/bot/Ferris/idols/'
+const requestedAudioPath = 'C:/Users/Esteban/Documents/GitHub/Ferris/audio'
+const idolPath = 'C:/Users/Esteban/Documents/GitHub/Ferris/idols/'
+// const requestedAudioPath = '/home/bot/Ferris/audio'
+// const idolPath = '/home/bot/Ferris/idols/'
 const opts = {maxResults: 2, key: 'AIzaSyBkDcWtth7A-ZJIy82Wg0vIgrKtCdwFWJo'};
 // const mp3Path = 'C:/Users/Esteban/Documents/GitHub/Ferris/mp3/'
 
@@ -37,6 +40,10 @@ const rls = require('rls-api')
 var rocketLeague = new rls.Client({
     token: "PVRPFDYU3QVKGNXXXOLLQ0QJHRJBP5YF"
 });
+
+
+
+
 
 client.on('ready', () => {
     console.log('My body is ready !');
@@ -204,57 +211,52 @@ client.on('ready', () => {
           'https://youtu.be/' : 'ytTimestamp()'
       }
   
-  
       //Recherche de film/série/anime
-      search = query => {
-        if (!message.guild) return;
-        name = query.replace(/ /g, '+')
-        let url = `https://www.nautiljon.com/animes/${name}.html`
-        request(url, { json: true }, (err, res, body) => {
-            if (err) { return console.log(err); }
-            if (res.statusCode === 200) {
-                message.channel.send(url)
-            } else {
-                message.channel.send(`Nothing found for *${query}*`)
-            }
-            // let embed = {
-            //     'title': body.Title,
-            //     'color': 16213584,
-            //     'thumbnail': {
-            //       'url': body.Poster
-            //     },
-            //     'image': {
-            //       'url': body.Poster
-            //     },
-            //     'fields': [
-            //         {
-            //           'name' : '__Genres__',
-            //           'value': body.Genre
-            //         },
-            //         {
-            //           'name' : '__Episodes__',
-            //           'value': body.Runtime,
-            //           'inline' : true
-            //         },
-            //         {
-            //           'name' : '__Date de publication__',
-            //           'value': body.Released,
-            //           'inline' : true
-            //         },
-            //         {
-            //           'name' : '__Synopsis__',
-            //           'value': body.Plot
-            //         },
-            //     ]
-            //   };
-            //   message.channel.send({ embed });
-        });
-      }
-
-    //   if (message.content.match(/\{([^)]+)\}/) !== null) {
-    //       let query = message.content.match(/\{([^)]+)\}/)[1]
-    //       search(query)
+    //   search = query => {
+    //     if (!message.guild) return;
+    //     name = query.replace(/ /g, '+')
+    //     let url = `https://www.nautiljon.com/animes/${name}.html`
+    //     request(url, { json: true }, (err, res, body) => {
+    //         if (err) { return console.log(err); }
+    //         if (res.statusCode === 200) {
+    //             message.channel.send(url)
+    //         } else {
+    //             message.channel.send(`Nothing found for *${query}*`)
+    //         }
+    //         // let embed = {
+    //         //     'title': body.Title,
+    //         //     'color': 16213584,
+    //         //     'thumbnail': {
+    //         //       'url': body.Poster
+    //         //     },
+    //         //     'image': {
+    //         //       'url': body.Poster
+    //         //     },
+    //         //     'fields': [
+    //         //         {
+    //         //           'name' : '__Genres__',
+    //         //           'value': body.Genre
+    //         //         },
+    //         //         {
+    //         //           'name' : '__Episodes__',
+    //         //           'value': body.Runtime,
+    //         //           'inline' : true
+    //         //         },
+    //         //         {
+    //         //           'name' : '__Date de publication__',
+    //         //           'value': body.Released,
+    //         //           'inline' : true
+    //         //         },
+    //         //         {
+    //         //           'name' : '__Synopsis__',
+    //         //           'value': body.Plot
+    //         //         },
+    //         //     ]
+    //         //   };
+    //         //   message.channel.send({ embed });
+    //     });
     //   }
+
 
     //Recherche de film/série/anime
       movieSearch = query => {
@@ -485,19 +487,25 @@ client.on('ready', () => {
             for (let image of images) {
                 var tempTags = []
                 image.common.tags.forEach((tag, index) => {
-                    let stuff = "[`"+tag+"`]"+`(https://gelbooru.com/index.php?page=post&s=list&tags=${tag}) `
+                    // let stuff = "[`"+tag+"`]"+`(https://gelbooru.com/index.php?page=post&s=list&tags=${tag}) `
+                    let stuff = tag
                     if (tempTags[0] === undefined) {
-                        tempTags.push(stuff)
+                        tempTags.push(` \`${stuff}\`, `)
                     } else {
-                        tempTags[0] += stuff
+                        tempTags[0] += ` \`${stuff}\`, `
                     }
                 })
-
                 let embed = {
                     'color': 4886754,
                     'image': {
                         'url': image.common.file_url
-                    }
+                    },
+                    'fields':[
+                        {
+                            "name": 'Tags',
+                            "value": tempTags[0]
+                        }
+                    ]
                 };
                 message.channel.send({ embed });
             }
@@ -552,6 +560,8 @@ client.on('ready', () => {
               message.channel.reply('You have to be in a voice channel to do that.'); 
           }
       }
+
+      
   
       fukyu = () => {
           if (!message.guild) return;
@@ -619,6 +629,8 @@ client.on('ready', () => {
               retardify(query)
           }
       }
+
+      const reminders = []
   
       remindme = query => {
           if (!message.guild) return;
@@ -887,48 +899,230 @@ client.on('ready', () => {
         }
       }
 
+    //   mal = anime => {
+    //     Mal.search("anime", {
+    //         q: anime,
+    //         page: 1,
+    //         type: 'TV',
+    //         limit: 5
+    //     }).then(j => {
+    //         console.log(j.results)
+    //         let res = j.results[0]
+    //         let embed = {
+    //             'title': res.title,
+    //             'color': 4672943,
+    //             'thumbnail': {
+    //             'url': 'https://scontent-cdt1-1.xx.fbcdn.net/v/t1.0-9/11102649_944013775632587_553205677214199318_n.png?_nc_cat=1&_nc_oc=AQkIWg545FQM4ooytY2S0lidPbdRMG99Y9YFFtO4LxPn-qme4ySH9--eEhZZcSGhTHYduJ83XrEC5B6tTFpwX7TW&_nc_ht=scontent-cdt1-1.xx&oh=b54634241cc3646c1472aea6964d29bc&oe=5DB2E0C5'
+    //             },
+    //             'image': {
+    //             'url': res.image_url
+    //             },
+    //             'fields': [
+    //                 {
+    //                     'name': '__Score__',
+    //                     'value': String(res.score),
+    //                     'inline': true
+    //                 },
+    //                 {
+    //                     'name': '__Episodes__',
+    //                     'value': String(res.episodes),
+    //                     'inline': true
+    //                 },
+    //                 {
+    //                     'name': '__Synopsis__',
+    //                     'value': res.synopsis,
+    //                 },
+    //                 {
+    //                     'name': '__Link__',
+    //                     'value': res.url
+    //                 }
+    //             ]
+    //         };
+    //         message.channel.send({ embed });
+    //     });
+    //   }
+
+    animeEmbed = anime => {
+        let embed = {
+            'title': anime.title,
+            'color': 4672943,
+            'thumbnail': {
+            'url': 'https://scontent-cdt1-1.xx.fbcdn.net/v/t1.0-9/11102649_944013775632587_553205677214199318_n.png?_nc_cat=1&_nc_oc=AQkIWg545FQM4ooytY2S0lidPbdRMG99Y9YFFtO4LxPn-qme4ySH9--eEhZZcSGhTHYduJ83XrEC5B6tTFpwX7TW&_nc_ht=scontent-cdt1-1.xx&oh=b54634241cc3646c1472aea6964d29bc&oe=5DB2E0C5'
+            },
+            'image': {
+            'url': anime.image_url
+            },
+            'fields': [
+                {
+                    'name': '__Score__',
+                    'value': String(anime.score),
+                    'inline': true
+                },
+                {
+                    'name': '__Episodes__',
+                    'value': String(anime.episodes),
+                    'inline': true
+                },
+                {
+                    'name': '__Synopsis__',
+                    'value': anime.synopsis,
+                },
+                {
+                    'name': '__Link__',
+                    'value': anime.url
+                }
+            ]
+        };
+        message.channel.send({ embed });
+    }
+
       mal = anime => {
         Mal.search("anime", {
             q: anime,
             page: 1,
             type: 'TV',
-            limit: 1
+            limit: 5
         }).then(j => {
-            let res = j.results[0]
-            console.log(res)
-            let embed = {
-                'title': res.title,
-                'color': 4672943,
-                'thumbnail': {
-                'url': 'https://scontent-cdt1-1.xx.fbcdn.net/v/t1.0-9/11102649_944013775632587_553205677214199318_n.png?_nc_cat=1&_nc_oc=AQkIWg545FQM4ooytY2S0lidPbdRMG99Y9YFFtO4LxPn-qme4ySH9--eEhZZcSGhTHYduJ83XrEC5B6tTFpwX7TW&_nc_ht=scontent-cdt1-1.xx&oh=b54634241cc3646c1472aea6964d29bc&oe=5DB2E0C5'
-                },
-                'image': {
-                'url': res.image_url
-                },
-                'fields': [
-                    {
-                        'name': '__Score__',
-                        'value': String(res.score),
-                        'inline': true
-                    },
-                    {
-                        'name': '__Episodes__',
-                        'value': String(res.episodes),
-                        'inline': true
-                    },
-                    {
-                        'name': '__Synopsis__',
-                        'value': res.synopsis,
-                    },
-                    {
-                        'name': '__Link__',
-                        'value': res.url
-                    }
-                ]
-            };
-            message.channel.send({ embed });
+            console.log(j.results)
+            // let res = j.results
+            let animes = j.results
+            if (anime.length > 1) {
+                var alphabet=['🇦','🇧','🇨','🇩','🇪']
+                // animes = []
+                // res.forEach(anime => {
+                //     animes.push({'title': anime.title})
+                // });
+                let text = ''
+                animes.forEach((anime, index)=> {
+                    text += `${alphabet[index]} ${anime.title}\n`
+                })
+                message.channel.send(text).then(sent => {
+                    if (animes.length > 1) {
+                        animes.forEach((anime, index) => {
+                            let emoji = `${alphabet[index]}` 
+                            setTimeout(() => {
+                                sent.react(emoji)
+                            }, 700);
+                        })
+                        const filter = (reaction, user) => {
+                            if (reaction.emoji !== null && user.id !== sent.author.id) {
+                                console.log('yup')
+                                return 'hey'
+                            }
+                        };
+                        sent.awaitReactions(filter, {max: 1, time: 60000})
+                            .then(collected => {
+                                    let choice = collected.entries().next().value[0]
+                                    console.log(choice)
+                                        alphabet.forEach((letter, index) => {
+                                            if (choice === letter) {
+                                                console.log(animes[index])
+                                                animeEmbed(animes[index])
+                                            }
+                                        })
+                                    } 
+                                )
+                        } else {
+                            perso(users[0].id)
+                        }
+                    })
+                }
+
+            // let embed = {
+            //     'title': res.title,
+            //     'color': 4672943,
+            //     'thumbnail': {
+            //     'url': 'https://scontent-cdt1-1.xx.fbcdn.net/v/t1.0-9/11102649_944013775632587_553205677214199318_n.png?_nc_cat=1&_nc_oc=AQkIWg545FQM4ooytY2S0lidPbdRMG99Y9YFFtO4LxPn-qme4ySH9--eEhZZcSGhTHYduJ83XrEC5B6tTFpwX7TW&_nc_ht=scontent-cdt1-1.xx&oh=b54634241cc3646c1472aea6964d29bc&oe=5DB2E0C5'
+            //     },
+            //     'image': {
+            //     'url': res.image_url
+            //     },
+            //     'fields': [
+            //         {
+            //             'name': '__Score__',
+            //             'value': String(res.score),
+            //             'inline': true
+            //         },
+            //         {
+            //             'name': '__Episodes__',
+            //             'value': String(res.episodes),
+            //             'inline': true
+            //         },
+            //         {
+            //             'name': '__Synopsis__',
+            //             'value': res.synopsis,
+            //         },
+            //         {
+            //             'name': '__Link__',
+            //             'value': res.url
+            //         }
+            //     ]
+            // };
+            // message.channel.send({ embed });
         });
       }
+
+
+      search = name => {
+        let chara = name.replace(' ', '+')
+        axios.get(`https://xivapi.com/character/search?name=${chara}&server=_dc_Chaos`).then(response => {
+            let data = response.data.Results
+            console.log(data)
+            if (data.length === 0) {
+                message.channel.send(`Pas de résultats pour *${name.trim()}*.`)
+            } else {
+                var alphabet=['🇦','🇧','🇨','🇩','🇪','🇫','🇬','🇭','🇮','🇯','🇰','🇱','🇲','🇳','🇴','🇵','🇶','🇷','🇸','🇹','🇺','🇻','🇼','🇽','🇾','🇿']
+                users = []
+                data.forEach(user => {
+                    users.push({'user': user.Name, 'server': user.Server, 'avatar': user.Avatar, 'id': user.ID})
+                });
+                let text = ''
+                users.forEach((user, index)=> {
+                    text += `${alphabet[index]} **Nom** : ${user.user}, **Monde** : ${user.server}, **ID** : ${user.id}\n`
+                })
+                message.channel.send(text).then(sent => {
+                    if (users.length > 1) {
+                        users.forEach((user, index) => {
+                            let emoji = `${alphabet[index]}` 
+                            setTimeout(() => {
+                                sent.react(emoji)
+                            }, 700);
+                        })
+                        const filter = (reaction, user) => {
+                            if (reaction.emoji !== null && user.id !== sent.author.id) {
+                                console.log('yup')
+                                return 'hey'
+                            }
+                        };
+                        sent.awaitReactions(filter, { max: 1, time: 60000})
+                            .then(collected => {
+                                    let choice = collected.entries().next().value[0]
+                                    console.log(choice)
+                                        alphabet.forEach((letter, index) => {
+                                            if (choice === letter) {
+                                                console.log(users[index].id)
+                                                perso(users[index].id)
+                                            }
+                                        })
+                                    } 
+                                )
+                            .catch(e => {
+                                console.log(e);
+                                message.channel.send(`Trop de résultats pour *${name.trim()}*.`)
+                            })
+                    } else {
+                        perso(users[0].id)
+                    }
+                })
+            }
+        })
+    }
+
+
+    if (message.content.match(/\{([^)]+)\}/) !== null) {
+        let query = message.content.match(/\{([^)]+)\}/)[1]
+        mal(query)
+    }
   
   
       //BS
